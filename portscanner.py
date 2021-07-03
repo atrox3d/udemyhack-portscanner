@@ -12,16 +12,25 @@ def check_ip(ip):
         return socket.gethostbyname(ip)
 
 
+def get_banner(sock: socket.socket):
+    return sock.recv(1024)
+
+
 def scan_port(ip, port):
     try:
         port = int(port)
         sock = socket.socket()
         sock.settimeout(0.5)
         sock.connect((ip, port))
-        print(f'[+] Port {port} is open.')
+        try:
+            banner = get_banner(sock)
+            print(f'[+] Open Port {port}: {str(banner.decode().strip())}.')
+        except:
+            print(f'[+] Open Port {port}.')
     except Exception as e:
         # print(f'[-] Port {port} is closed, reason: {repr(e)}')
         pass
+
 
 def scan(target):
     converted_ip = check_ip(target)
@@ -42,10 +51,10 @@ else:
 
 if ',' in targets:
     for target in targets.split(','):
-        print(targets)
+        # print(targets)
         scan(target.strip())
 else:
-    print(targets)
+    # print(targets)
     scan(targets.strip())
 
 
