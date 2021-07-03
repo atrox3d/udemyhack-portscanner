@@ -44,17 +44,17 @@ def scan(target):
         scan_port(converted_ip, port)
 
 
-if not len(sys.argv) > 1:
-    targets = input('[+] Enter target/s to scan (split multiple targets with comma): ')
-else:
-    targets = "".join(sys.argv[1:])
+if __name__ == '__main__':
 
-if ',' in targets:
-    for target in targets.split(','):
+    if not len(sys.argv) > 1:
+        targets = input('[+] Enter target/s to scan (split multiple targets with comma): ')
+    else:
+        targets = "".join(sys.argv[1:])
+
+    if ',' in targets:
+        for target in targets.split(','):
+            # print(targets)
+            scan(target.strip())
+    else:
         # print(targets)
-        scan(target.strip())
-else:
-    # print(targets)
-    scan(targets.strip())
-
-
+        scan(targets.strip())
