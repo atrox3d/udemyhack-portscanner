@@ -16,11 +16,11 @@ def get_banner(sock: socket.socket):
     return sock.recv(1024)
 
 
-def scan_port(ip, port):
+def scan_port(ip, port, timeout=0.5):
     try:
         port = int(port)
         sock = socket.socket()
-        sock.settimeout(0.5)
+        sock.settimeout(timeout)
         sock.connect((ip, port))
         try:
             banner = get_banner(sock)
@@ -32,9 +32,9 @@ def scan_port(ip, port):
         pass
 
 
-def scan(target):
+def scan(target, start=1, end=100, timeout=0.5):
     converted_ip = check_ip(target)
-    ports = range(1, 100)
+    ports = range(start, end)
 
     print(f"[+] Target    : {target}")
     print(f"[+] Target ip : {converted_ip}")
