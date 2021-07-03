@@ -20,8 +20,8 @@ def scan_port(ip, port):
         sock.connect((ip, port))
         print(f'[+] Port {port} is open.')
     except Exception as e:
-        print(f'[-] Port {port} is closed, reason: {repr(e)}')
-
+        # print(f'[-] Port {port} is closed, reason: {repr(e)}')
+        pass
 
 def scan(target):
     converted_ip = check_ip(target)
