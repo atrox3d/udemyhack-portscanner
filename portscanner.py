@@ -23,20 +23,29 @@ def scan_port(ip, port):
         print(f'[-] Port {port} is closed, reason: {repr(e)}')
 
 
+def scan(target):
+    converted_ip = check_ip(target)
+    ports = range(1, 100)
+
+    print(f"[+] Target    : {target}")
+    print(f"[+] Target ip : {converted_ip}")
+    print(f"[+] Port range: {ports}")
+
+    for port in ports:
+        scan_port(converted_ip, port)
+
+
 if not len(sys.argv) > 1:
-    ipaddress = input('[+] Enter target to scan: ')
+    targets = input('[+] Enter target/s to scan (split multiple targets with comma): ')
 else:
-    ipaddress = sys.argv[1]
+    targets = "".join(sys.argv[1:])
 
-converted_ip = check_ip(ipaddress)
+if ',' in targets:
+    for target in targets.split(','):
+        print(targets)
+        scan(target.strip())
+else:
+    print(targets)
+    scan(targets.strip())
 
-# port = 80
-# port = int(input('[+] Enter port to scan:'))
-ports = range(75, 85)
 
-print(f"[+] Target ip : {converted_ip}")
-print(f"[+] Port range: {ports}")
-
-for port in ports:
-    # print(f"[+] scanning {ip}:{port}")
-    scan_port(converted_ip, port)
