@@ -27,25 +27,26 @@ def print_to_file_decorator(file):
     return print_decorator
 
 
-threads, timeout, start, end, args = parse_options()
+target_threading, port_threading,  timeout, start, end, args = parse_options()
 
 LOGDIR = "logs"
 targets = args
 kw = dict(start=start, end=end, timeout=timeout)
 kwargs = {k: v for k, v in kw.items() if v is not None}
 
-if threads:
-    # create_threads(targets, portscanner.scan, args, kwargs)
-    threads = []
+if target_threading:
+    target_threading = []
 
     for target in targets:
         th = threading.Thread(target=portscanner.scan, name=target, args=(target,), kwargs=kwargs)
         print(f"[+] starting thread {th.getName()}")
         th.start()
-        threads.append(th)
+        target_threading.append(th)
 
-    for th in threads:
+    for th in target_threading:
+        print(f"[+] joining thread {th.getName()}")
         th.join()
+    print(f"[+] waiting for threads")
 else:
     for target in targets:
         logfile = open(os.path.join("logs", f"{target}.log"), "w")

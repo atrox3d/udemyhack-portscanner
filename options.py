@@ -4,12 +4,20 @@ import sys
 
 def show_help():
     # options_string = " ".join([f"[-{option}]" for option in options if option != ":"])
-    print(f"syntax: {sys.argv[0]} [-h] [-t timeout] [-r port range start-end] [-s port start] [-e port end]")
+    print(
+        f"syntax: {sys.argv[0]} "
+        f"[-h]                     : display help and exit"
+        f"[-T]                     : enable target threading"
+        f"[-P]                     : enable port threading"
+        f"[-t timeout]             : set timeout (default 0.5)"
+        f"[-r port range start-end]: set port range start-end (default(1-100)"
+        f"[-s port start]          : set port start (default 1)"
+        f"[-e port end]            : set port end (default 100)"
+    )
 
 
 def parse_options():
-    options = "ht:r:s:e:"
-    options = "hTt:r:s:e:"
+    options = "hTPt:r:s:e:"
 
     try:
         opts, args = getopt.getopt(
@@ -18,12 +26,12 @@ def parse_options():
         )
         print(f"GETOPT| {opts=}")
         print(f"GETOPT| {args=}")
-        # print(f"{sys.argv[1:]=}")
     except getopt.GetoptError as goe:
         print(repr(goe))
         exit(1)
 
-    threads = False
+    target_threading = False
+    port_threading = False
     timeout = None
     start = None
     end = None
@@ -32,7 +40,7 @@ def parse_options():
             timeout = float(arg)
             print(f"GETOPT| set timeout to: {timeout}")
         elif opt in ['-T']:
-            threads = True
+            target_threading = True
             print(f"GETOPT| enable threading")
         elif opt in ['-r']:
             try:
@@ -51,4 +59,4 @@ def parse_options():
         elif opt in ['-h']:
             show_help()
             exit()
-    return threads, timeout, start, end, args
+    return target_threading, port_threading, timeout, start, end, args
