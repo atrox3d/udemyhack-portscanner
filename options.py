@@ -9,6 +9,7 @@ def show_help():
 
 def parse_options():
     options = "ht:r:s:e:"
+    options = "hTt:r:s:e:"
 
     try:
         opts, args = getopt.getopt(
@@ -22,6 +23,7 @@ def parse_options():
         print(repr(goe))
         exit(1)
 
+    threads = False
     timeout = None
     start = None
     end = None
@@ -29,6 +31,9 @@ def parse_options():
         if opt in ['-t']:
             timeout = float(arg)
             print(f"GETOPT| set timeout to: {timeout}")
+        elif opt in ['-T']:
+            threads = True
+            print(f"GETOPT| enable threading")
         elif opt in ['-r']:
             try:
                 start, end = map(int, arg.split("-"))
@@ -46,4 +51,4 @@ def parse_options():
         elif opt in ['-h']:
             show_help()
             exit()
-    return timeout, start, end, args
+    return threads, timeout, start, end, args

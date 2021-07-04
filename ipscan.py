@@ -27,7 +27,7 @@ def print_to_file_decorator(file):
     return print_decorator
 
 
-timeout, start, end, args = parse_options()
+threads, timeout, start, end, args = parse_options()
 
 LOGDIR = "logs"
 targets = args
