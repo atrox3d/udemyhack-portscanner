@@ -32,8 +32,9 @@ for opt, arg in opts:
         try:
             start, end = map(int, arg.split("-"))
             print(f"set port range start to: {start}-{end}")
-        except Exception as e:
+        except ValueError as e:
             print(f"ERROR| invalid range format {arg}")
+            print(f"ERROR| {repr(e)}")
             exit(1)
     elif opt in ['-s']:
         start = int(arg)
