@@ -38,7 +38,7 @@ def scan(target, start=1, end=100, timeout=0.5):
     except Exception as e:
         print(f"[-] invalid address/domain: {target}")
         return False
-    ports = range(start, end)
+    ports = range(start, end + 1)
 
     print(f"[+] Target    : {target}")
     print(f"[+] Target ip : {converted_ip}")
