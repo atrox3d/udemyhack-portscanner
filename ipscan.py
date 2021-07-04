@@ -33,7 +33,21 @@ LOGDIR = "logs"
 targets = args
 kw = dict(start=start, end=end, timeout=timeout)
 kwargs = {k: v for k, v in kw.items() if v is not None}
-for target in targets:
-    logfile = open(os.path.join("logs", f"{target}.log"), "w")
-    portscanner.print = print_to_file_decorator(logfile)
-    portscanner.scan(target, **kwargs)
+
+if threads:
+    # create_threads(targets, portscanner.scan, args, kwargs)
+    threads = []
+
+    for target in targets:
+        th = threading.Thread(target=portscanner.scan, name=target, args=(target,), kwargs=kwargs)
+        print(f"[+] starting thread {th.getName()}")
+        th.start()
+        threads.append(th)
+
+    for th in threads:
+        th.join()
+else:
+    for target in targets:
+        logfile = open(os.path.join("logs", f"{target}.log"), "w")
+        portscanner.print = print_to_file_decorator(logfile)
+        portscanner.scan(target, **kwargs)
