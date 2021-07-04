@@ -1,6 +1,16 @@
+import os
 import sys
 import getopt
 import portscanner
+
+
+def print_to_file_decorator(file):
+    def print_decorator(*args, **kwargs):
+        print(*args, **kwargs)
+        kwargs.update(file=file)
+        print(*args, **kwargs)
+
+    return print_decorator
 
 
 def show_help():
@@ -14,8 +24,8 @@ try:
         sys.argv[1:],
         options
     )
-    print(f"{opts=}")
-    print(f"{args=}")
+    print(f"GETOPT| {opts=}")
+    print(f"GETOPT| {args=}")
     # print(f"{sys.argv[1:]=}")
 except getopt.GetoptError as goe:
     print(repr(goe))
@@ -27,27 +37,30 @@ end = None
 for opt, arg in opts:
     if opt in ['-t']:
         timeout = float(arg)
-        print(f"set timeout to: {timeout}")
+        print(f"GETOPT| set timeout to: {timeout}")
     elif opt in ['-r']:
         try:
             start, end = map(int, arg.split("-"))
-            print(f"set port range start to: {start}-{end}")
+            print(f"GETOPT| set port range start to: {start}-{end}")
         except ValueError as e:
-            print(f"ERROR| invalid range format {arg}")
-            print(f"ERROR| {repr(e)}")
+            print(f"GETOPT| ERROR| invalid range format {arg}")
+            print(f"GETOPT| ERROR| {repr(e)}")
             exit(1)
     elif opt in ['-s']:
         start = int(arg)
-        print(f"set port range start to: {start}")
+        print(f"GETOPT| set port range start to: {start}")
     elif opt in ['-e']:
         end = int(arg)
-        print(f"set port range end to: {end + 1}")
+        print(f"GETOPT| set port range end to: {end + 1}")
     elif opt in ['-h']:
         show_help()
         exit()
 
+LOGDIR = "logs"
 targets = args
 kw = dict(start=start, end=end, timeout=timeout)
-kwa = {k: v for k, v in kw.items() if v is not None}
+kwargs = {k: v for k, v in kw.items() if v is not None}
 for target in targets:
-    portscanner.scan(target, **kwa)
+    logfile = open(os.path.join("logs", f"{target}.log"), "w")
+    portscanner.print = print_to_file_decorator(logfile)
+    portscanner.scan(target, **kwargs)

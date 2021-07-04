@@ -42,7 +42,7 @@ def scan(target, start=1, end=100, timeout=0.5):
 
     print(f"[+] Target    : {target}")
     print(f"[+] Target ip : {converted_ip}")
-    print(f"[+] Port range: {ports}")
+    print(f"[+] Port range: {start}-{end}")
     print(f"[+] timeout   : {timeout}")
 
     for port in ports:
