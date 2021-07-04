@@ -33,16 +33,22 @@ def scan_port(ip, port, timeout=0.5):
 
 
 def scan(target, start=1, end=100, timeout=0.5):
-    converted_ip = check_ip(target)
+    try:
+        converted_ip = check_ip(target)
+    except Exception as e:
+        print(f"[-] invalid address/domain: {target}")
+        return False
     ports = range(start, end)
 
     print(f"[+] Target    : {target}")
     print(f"[+] Target ip : {converted_ip}")
     print(f"[+] Port range: {ports}")
+    print(f"[+] timeout   : {timeout}")
 
     for port in ports:
-        scan_port(converted_ip, port)
-
+        # print('scan')
+        scan_port(converted_ip, port, timeout)
+    return True
 
 if __name__ == '__main__':
 
