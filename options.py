@@ -5,14 +5,14 @@ import sys
 def show_help():
     # options_string = " ".join([f"[-{option}]" for option in options if option != ":"])
     print(
-        f"syntax: {sys.argv[0]} "
-        f"[-h]                     : display help and exit"
-        f"[-T]                     : enable target threading"
-        f"[-P]                     : enable port threading"
-        f"[-t timeout]             : set timeout (default 0.5)"
-        f"[-r port range start-end]: set port range start-end (default(1-100)"
-        f"[-s port start]          : set port start (default 1)"
-        f"[-e port end]            : set port end (default 100)"
+        f"syntax: {sys.argv[0]}\n"
+        f"[-h]                     : display help and exit\n"
+        f"[-T]                     : enable target threading\n"
+        f"[-P]                     : enable port threading\n"
+        f"[-t timeout]             : set timeout (default 0.5)\n"
+        f"[-r port range start-end]: set port range start-end (default(1-100)\n"
+        f"[-s port start]          : set port start (default 1)\n"
+        f"[-e port end]            : set port end (default 100\n)"
     )
 
 

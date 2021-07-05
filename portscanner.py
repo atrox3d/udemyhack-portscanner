@@ -1,6 +1,6 @@
 import sys
-import getopt
 import socket
+import threading
 from IPy import IP
 
 
@@ -33,12 +33,31 @@ def scan_port(ip, port, timeout=0.5):
         pass
 
 
-def scan_ports(converted_ip, ports, timeout):
-    for port in ports:
-        scan_port(converted_ip, port, timeout)
+def scan_ports(converted_ip, ports, timeout, threaded=True):
+
+    if threaded:
+        print(f"[+] starting port threads for {converted_ip} {ports}")
+        threads = []
+        for port in ports:
+            th = threading.Thread(
+                target=scan_port,
+                name=f"scan_port {converted_ip:{15}} {port}",
+                args=(converted_ip, port, timeout),
+            )
+            # print(f"[+] starting thread {th.getName()}")
+            th.start()
+            threads.append(th)
+
+        print(f"[+] waiting port threads for {converted_ip}:{ports}")
+        for th in threads:
+            # print(f"[+] joining thread {th.getName()}")
+            th.join()
+    else:
+        for port in ports:
+            scan_port(converted_ip, port, timeout)
 
 
-def scan(target, start=1, end=100, timeout=0.5):
+def scan(target, start=1, end=100, timeout=0.5, threaded=True):
     try:
         converted_ip = check_ip(target)
     except Exception as e:
@@ -51,7 +70,7 @@ def scan(target, start=1, end=100, timeout=0.5):
     print(f"[+] Port range: {start}-{end}")
     print(f"[+] timeout   : {timeout}")
 
-    scan_ports(converted_ip, ports, timeout)
+    scan_ports(converted_ip, ports, timeout, threaded)
     return True
 
 
