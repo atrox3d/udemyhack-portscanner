@@ -61,6 +61,4 @@ if target_threading:
     print(f"[+] waiting for target threads")
 else:
     for target in targets:
-        # logfile = open(os.path.join("logs", f"{target}.log"), "w")
-        # portscanner.print = print_to_file_decorator(logfile)
         portscanner.scan_target(target, **kwargs)
