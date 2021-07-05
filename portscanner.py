@@ -2,6 +2,7 @@ import os
 import sys
 import socket
 import threading
+import logging
 from IPy import IP
 
 
@@ -17,24 +18,32 @@ def get_banner(sock: socket.socket):
     return sock.recv(1024)
 
 
-def scan_port(ip, port, timeout=0.5):
+def get_basic_logger(name):
+    logging.basicConfig(level=logging.NOTSET)
+    return logging.getLogger(name)
+
+
+def scan_port(logger, ip, port, timeout=0.5 ):
     try:
         port = int(port)
         sock = socket.socket()
         sock.settimeout(timeout)
+        # print(f"CONNECT| {ip}:{port} | {sock.gettimeout()=}")
         sock.connect((ip, port))
+        # print(f"CONNECT| {ip}:{port}| OK")
         pad = 15
         try:
             banner = get_banner(sock)
-            print(f'[+] Open Port {ip:{pad}} {port}: {str(banner.decode().strip())}.')
+            logger.info(f'[+] Open Port {ip:{pad}} {port}: {str(banner.decode().strip())}.')
         except:
-            print(f'[+] Open Port {ip:{pad}} {port}.')
+            logger.info(f'[+] Open Port {ip:{pad}} {port}.')
     except Exception as e:
-        # print(f'[-] Port {port} is closed, reason: {repr(e)}')
+        # print(f"CONNECT| {ip}:{port}| FAIL")
+        # print(f"CONNECT| {repr(e)}")
         pass
 
 
-def scan_ports(converted_ip, ports, timeout, threaded=True):
+def scan_ports(logger, converted_ip, ports, timeout, threaded=True):
     if threaded:
         print(f"[+] starting port threads for {converted_ip} {ports}")
         threads = []
@@ -42,7 +51,7 @@ def scan_ports(converted_ip, ports, timeout, threaded=True):
             th = threading.Thread(
                 target=scan_port,
                 name=f"scan_port {converted_ip:{15}} {port}",
-                args=(converted_ip, port, timeout),
+                args=(logger, converted_ip, port, timeout),
             )
             # print(f"[+] starting thread {th.getName()}")
             th.start()
@@ -54,23 +63,37 @@ def scan_ports(converted_ip, ports, timeout, threaded=True):
             th.join()
     else:
         for port in ports:
-            scan_port(converted_ip, port, timeout)
+            scan_port(logger, converted_ip, port, timeout)
 
 
-def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True):
+def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logdir="logs"):
+    logging.basicConfig(level=logging.NOTSET, format="")
+    logger = logging.getLogger(target)
+
+    logfile = os.path.join("logs", f"{target}.log")
+    filehandler = logging.FileHandler(logfile, mode="w")
+    logger.addHandler(filehandler)
+
+    # stderrhandler = logging.StreamHandler(sys.stderr)
+    # stderrhandler = logging.StreamHandler()
+    # logger.addHandler(stderrhandler)
+
+    print(f"{logger.name=}")
+    logger.info(f"{socket.getdefaulttimeout()=}")
+
     try:
         converted_ip = check_ip(target)
     except Exception as e:
-        print(f"[-] invalid address/domain: {target}")
+        logger.info(f"[-] invalid address/domain: {target}")
         return False
     ports = range(start, end + 1)
 
-    print(f"[+] Target    : {target}")
-    print(f"[+] Target ip : {converted_ip}")
-    print(f"[+] Port range: {start}-{end}")
-    print(f"[+] timeout   : {timeout}")
+    logger.info(f"[+] Target    : {target}")
+    logger.info(f"[+] Target ip : {converted_ip}")
+    logger.info(f"[+] Port range: {start}-{end}")
+    logger.info(f"[+] timeout   : {timeout}")
 
-    scan_ports(converted_ip, ports, timeout, port_threading)
+    scan_ports(logger, converted_ip, ports, timeout, port_threading)
     return True
 
 
@@ -102,7 +125,7 @@ def scan_targets(*targets, start, end, timeout, target_threading, port_threading
         print(f"[+] waiting for target threads")
     else:
         for target in targets:
-            logfile = open(os.path.join("logs", f"{target}.log"), "w")
+            # logfile = open(os.path.join("logs", f"{target}.log"), "w")
             # portscanner.print = print_to_file_decorator(logfile)
             scan_target(target, **kwargs)
 

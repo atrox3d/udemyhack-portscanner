@@ -1,8 +1,6 @@
-import os
-import sys
-import portscanner
 import threading
 
+import portscanner
 from options import parse_options
 
 
@@ -27,18 +25,32 @@ def print_to_file_decorator(file):
     return print_decorator
 
 
-target_threading, port_threading,  timeout, start, end, args = parse_options()
-kwargs_dict = dict(start=start, end=end, timeout=timeout, threaded=port_threading)
+target_threading, port_threading, timeout, start, end, args = parse_options()
+LOGDIR = "logs"
+
+kwargs_dict = dict(
+    start=start,
+    end=end,
+    timeout=timeout,
+    port_threading=port_threading,
+    logdir=LOGDIR
+)
 kwargs = {k: v for k, v in kwargs_dict.items() if v is not None}
 
-LOGDIR = "logs"
+print(kwargs)
+
 targets = args
 
 if target_threading:
     threads = []
 
     for target in targets:
-        th = threading.Thread(target=portscanner.scan_target, name=target, args=(target,), kwargs=kwargs)
+        th = threading.Thread(
+            target=portscanner.scan_target,
+            name=target,
+            args=(target,),
+            kwargs=kwargs
+        )
         print(f"[+] starting thread {th.getName()}")
         th.start()
         threads.append(th)
@@ -49,6 +61,6 @@ if target_threading:
     print(f"[+] waiting for target threads")
 else:
     for target in targets:
-        logfile = open(os.path.join("logs", f"{target}.log"), "w")
-        portscanner.print = print_to_file_decorator(logfile)
+        # logfile = open(os.path.join("logs", f"{target}.log"), "w")
+        # portscanner.print = print_to_file_decorator(logfile)
         portscanner.scan_target(target, **kwargs)
