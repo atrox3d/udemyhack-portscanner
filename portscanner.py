@@ -3,6 +3,7 @@ import sys
 import socket
 import threading
 import logging
+
 from IPy import IP
 
 logging.basicConfig(level=logging.NOTSET, format="")
@@ -21,9 +22,14 @@ def get_banner(sock: socket.socket):
     return sock.recv(1024)
 
 
-def get_basic_logger(name):
-    logging.basicConfig(level=logging.NOTSET)
-    return logging.getLogger(name)
+def decode_banner(banner):
+    converted = str(banner, 'utf-8')
+    return converted
+
+
+def clean_banner(text_banner):
+    text_banner = ''.join([c for c in text_banner if c.isprintable()])
+    return text_banner
 
 
 def scan_port(ip, port, timeout=0.5, logger=rootlogger):
@@ -31,18 +37,26 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
         port = int(port)
         sock = socket.socket()
         sock.settimeout(timeout)
-        # print(f"CONNECT| {ip}:{port} | {sock.gettimeout()=}")
         sock.connect((ip, port))
-        # print(f"CONNECT| {ip}:{port}| OK")
         pad = 15
         try:
             banner = get_banner(sock)
-            logger.info(f'[+] Open Port {ip:{pad}} {port}: {str(banner.decode().strip())}.')
-        except:
-            logger.info(f'[+] Open Port {ip:{pad}} {port}.')
+            text_banner = decode_banner(banner)
+
+            decode_warning = False
+            if not all(map(str.isprintable, text_banner)):
+                text_banner = clean_banner(text_banner)
+                decode_warning = True
+            if not all(map(str.isprintable, text_banner)):
+                logger.critical("[!!] found \\x00 inside banner, cannot fix, EXITING")
+                exit()
+            if decode_warning:
+                logger.info(f'[+] Open Port {ip:{pad}} {port}, banner (binary): *{{{text_banner}}}.')
+            else:
+                logger.info(f'[+] Open Port {ip:{pad}} {port}: banner (text)  : [{text_banner}].')
+        except Exception as e:
+            logger.info(f'[+] Open Port {ip:{pad}} {port}, no banner received: "{repr(e)}".')
     except Exception as e:
-        # print(f"CONNECT| {ip}:{port}| FAIL")
-        # print(f"CONNECT| {repr(e)}")
         pass
 
 
@@ -63,7 +77,6 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
 
         print(f"[+] waiting port threads for {converted_ip}:{ports}")
         for th in threads:
-            # print(f"[+] joining thread {th.getName()}")
             th.join()
     else:
         for port in ports:
@@ -71,19 +84,11 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
 
 
 def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logdir="logs"):
-    # logging.basicConfig(level=logging.NOTSET, format="")
     logger = logging.getLogger(target)
 
     logfile = os.path.join("logs", f"{target}.log")
     filehandler = logging.FileHandler(logfile, mode="w")
     logger.addHandler(filehandler)
-
-    # stderrhandler = logging.StreamHandler(sys.stderr)
-    # stderrhandler = logging.StreamHandler()
-    # logger.addHandler(stderrhandler)
-
-    print(f"{logger.name=}")
-    logger.info(f"{socket.getdefaulttimeout()=}")
 
     try:
         converted_ip = check_ip(target)
@@ -129,8 +134,6 @@ def scan_targets(*targets, start, end, timeout, target_threading, port_threading
         print(f"[+] waiting for target threads")
     else:
         for target in targets:
-            # logfile = open(os.path.join("logs", f"{target}.log"), "w")
-            # portscanner.print = print_to_file_decorator(logfile)
             scan_target(target, **kwargs)
 
 
@@ -145,5 +148,4 @@ if __name__ == '__main__':
         for target in targets.split(' '):
             scan_target(target.strip(), port_threading=False)
     else:
-        # print(targets)
         scan_target(targets.strip(), port_threading=False)
