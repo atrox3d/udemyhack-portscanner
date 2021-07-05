@@ -5,6 +5,9 @@ import threading
 import logging
 from IPy import IP
 
+logging.basicConfig(level=logging.NOTSET, format="")
+rootlogger = logging.getLogger()
+
 
 def check_ip(ip):
     try:
@@ -23,7 +26,7 @@ def get_basic_logger(name):
     return logging.getLogger(name)
 
 
-def scan_port(logger, ip, port, timeout=0.5 ):
+def scan_port(ip, port, timeout=0.5, logger=rootlogger):
     try:
         port = int(port)
         sock = socket.socket()
@@ -43,7 +46,7 @@ def scan_port(logger, ip, port, timeout=0.5 ):
         pass
 
 
-def scan_ports(logger, converted_ip, ports, timeout, threaded=True):
+def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
     if threaded:
         print(f"[+] starting port threads for {converted_ip} {ports}")
         threads = []
@@ -51,7 +54,8 @@ def scan_ports(logger, converted_ip, ports, timeout, threaded=True):
             th = threading.Thread(
                 target=scan_port,
                 name=f"scan_port {converted_ip:{15}} {port}",
-                args=(logger, converted_ip, port, timeout),
+                args=(converted_ip, port, timeout),
+                kwargs=dict(logger=logger)
             )
             # print(f"[+] starting thread {th.getName()}")
             th.start()
@@ -63,11 +67,11 @@ def scan_ports(logger, converted_ip, ports, timeout, threaded=True):
             th.join()
     else:
         for port in ports:
-            scan_port(logger, converted_ip, port, timeout)
+            scan_port(converted_ip, port, timeout, logger=logger)
 
 
 def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logdir="logs"):
-    logging.basicConfig(level=logging.NOTSET, format="")
+    # logging.basicConfig(level=logging.NOTSET, format="")
     logger = logging.getLogger(target)
 
     logfile = os.path.join("logs", f"{target}.log")
@@ -84,7 +88,7 @@ def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logd
     try:
         converted_ip = check_ip(target)
     except Exception as e:
-        logger.info(f"[-] invalid address/domain: {target}")
+        logger.error(f"[-] invalid address/domain: {target}")
         return False
     ports = range(start, end + 1)
 
@@ -93,7 +97,7 @@ def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logd
     logger.info(f"[+] Port range: {start}-{end}")
     logger.info(f"[+] timeout   : {timeout}")
 
-    scan_ports(logger, converted_ip, ports, timeout, port_threading)
+    scan_ports(converted_ip, ports, timeout, port_threading, logger=logger)
     return True
 
 
