@@ -38,7 +38,7 @@ if target_threading:
     threads = []
 
     for target in targets:
-        th = threading.Thread(target=portscanner.scan, name=target, args=(target,), kwargs=kwargs)
+        th = threading.Thread(target=portscanner.scan_target, name=target, args=(target,), kwargs=kwargs)
         print(f"[+] starting thread {th.getName()}")
         th.start()
         threads.append(th)
@@ -51,4 +51,4 @@ else:
     for target in targets:
         logfile = open(os.path.join("logs", f"{target}.log"), "w")
         portscanner.print = print_to_file_decorator(logfile)
-        portscanner.scan(target, **kwargs)
+        portscanner.scan_target(target, **kwargs)

@@ -1,3 +1,4 @@
+import os
 import sys
 import socket
 import threading
@@ -22,7 +23,7 @@ def scan_port(ip, port, timeout=0.5):
         sock = socket.socket()
         sock.settimeout(timeout)
         sock.connect((ip, port))
-        pad=15
+        pad = 15
         try:
             banner = get_banner(sock)
             print(f'[+] Open Port {ip:{pad}} {port}: {str(banner.decode().strip())}.')
@@ -34,7 +35,6 @@ def scan_port(ip, port, timeout=0.5):
 
 
 def scan_ports(converted_ip, ports, timeout, threaded=True):
-
     if threaded:
         print(f"[+] starting port threads for {converted_ip} {ports}")
         threads = []
@@ -57,7 +57,7 @@ def scan_ports(converted_ip, ports, timeout, threaded=True):
             scan_port(converted_ip, port, timeout)
 
 
-def scan(target, start=1, end=100, timeout=0.5, threaded=True):
+def scan_target(target, start=1, end=100, timeout=0.5, threaded=True):
     try:
         converted_ip = check_ip(target)
     except Exception as e:
@@ -74,6 +74,39 @@ def scan(target, start=1, end=100, timeout=0.5, threaded=True):
     return True
 
 
+def scan_targets(*targets, start, end, timeout, target_threading, port_threading):
+    kwargs = dict(
+        start=start,
+        end=end,
+        timeout=timeout,
+        threaded=port_threading
+    )
+
+    if target_threading:
+        threads = []
+
+        for target in targets:
+            th = threading.Thread(
+                target=scan_target,
+                name=target,
+                args=(target,),
+                kwargs=kwargs
+            )
+            print(f"[+] starting thread {th.getName()}")
+            th.start()
+            threads.append(th)
+
+        for th in threads:
+            print(f"[+] joining target thread {th.getName()}")
+            th.join()
+        print(f"[+] waiting for target threads")
+    else:
+        for target in targets:
+            logfile = open(os.path.join("logs", f"{target}.log"), "w")
+            # portscanner.print = print_to_file_decorator(logfile)
+            scan_target(target, **kwargs)
+
+
 if __name__ == '__main__':
 
     if not len(sys.argv) > 1:
@@ -84,7 +117,7 @@ if __name__ == '__main__':
     if ',' in targets:
         for target in targets.split(','):
             # print(targets)
-            scan(target.strip())
+            scan_target(target.strip())
     else:
         # print(targets)
-        scan(targets.strip())
+        scan_target(targets.strip())
