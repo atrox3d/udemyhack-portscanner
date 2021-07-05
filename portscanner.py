@@ -22,14 +22,20 @@ def scan_port(ip, port, timeout=0.5):
         sock = socket.socket()
         sock.settimeout(timeout)
         sock.connect((ip, port))
+        pad=15
         try:
             banner = get_banner(sock)
-            print(f'[+] Open Port {port}: {str(banner.decode().strip())}.')
+            print(f'[+] Open Port {ip:{pad}} {port}: {str(banner.decode().strip())}.')
         except:
-            print(f'[+] Open Port {port}.')
+            print(f'[+] Open Port {ip:{pad}} {port}.')
     except Exception as e:
         # print(f'[-] Port {port} is closed, reason: {repr(e)}')
         pass
+
+
+def scan_ports(converted_ip, ports, timeout):
+    for port in ports:
+        scan_port(converted_ip, port, timeout)
 
 
 def scan(target, start=1, end=100, timeout=0.5):
@@ -45,10 +51,9 @@ def scan(target, start=1, end=100, timeout=0.5):
     print(f"[+] Port range: {start}-{end}")
     print(f"[+] timeout   : {timeout}")
 
-    for port in ports:
-        # print('scan')
-        scan_port(converted_ip, port, timeout)
+    scan_ports(converted_ip, ports, timeout)
     return True
+
 
 if __name__ == '__main__':
 

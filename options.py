@@ -41,7 +41,10 @@ def parse_options():
             print(f"GETOPT| set timeout to: {timeout}")
         elif opt in ['-T']:
             target_threading = True
-            print(f"GETOPT| enable threading")
+            print(f"GETOPT| enable target threading")
+        elif opt in ['-P']:
+            port_threading = True
+            print(f"GETOPT| enable port threading")
         elif opt in ['-r']:
             try:
                 start, end = map(int, arg.split("-"))
