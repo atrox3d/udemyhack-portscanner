@@ -32,14 +32,14 @@ kw = dict(start=start, end=end, timeout=timeout, threaded=port_threading)
 kwargs = {k: v for k, v in kw.items() if v is not None}
 
 # if port_threading:
-#     # def threaded(function):
+#     # def port_threading(function):
 #     #     def wrapper(*args, **kwargs):
 #     #         thread = threading.Thread(target=function, name=function.__name__,  args=args, kwargs=kwargs)
 #     #         thread.start()
 #     #         return thread
 #     #     return wrapper
 #     #
-#     # portscanner.scan_port = threaded(portscanner.scan_port)
+#     # portscanner.scan_port = port_threading(portscanner.scan_port)
 #
 #     def threaded_scan_ports_decorator(function):
 #         def threaded_scan_ports(*args, **kwargs):

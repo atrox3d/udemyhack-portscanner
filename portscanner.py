@@ -57,7 +57,7 @@ def scan_ports(converted_ip, ports, timeout, threaded=True):
             scan_port(converted_ip, port, timeout)
 
 
-def scan_target(target, start=1, end=100, timeout=0.5, threaded=True):
+def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True):
     try:
         converted_ip = check_ip(target)
     except Exception as e:
@@ -70,7 +70,7 @@ def scan_target(target, start=1, end=100, timeout=0.5, threaded=True):
     print(f"[+] Port range: {start}-{end}")
     print(f"[+] timeout   : {timeout}")
 
-    scan_ports(converted_ip, ports, timeout, threaded)
+    scan_ports(converted_ip, ports, timeout, port_threading)
     return True
 
 
@@ -110,14 +110,13 @@ def scan_targets(*targets, start, end, timeout, target_threading, port_threading
 if __name__ == '__main__':
 
     if not len(sys.argv) > 1:
-        targets = input('[+] Enter target/s to scan (split multiple targets with comma): ')
+        targets = input('[+] Enter target/s to scan (split multiple targets with space): ')
     else:
         targets = "".join(sys.argv[1:])
 
-    if ',' in targets:
-        for target in targets.split(','):
-            # print(targets)
-            scan_target(target.strip())
+    if ' ' in targets:
+        for target in targets.split(' '):
+            scan_target(target.strip(), port_threading=False)
     else:
         # print(targets)
-        scan_target(targets.strip())
+        scan_target(targets.strip(), port_threading=False)
