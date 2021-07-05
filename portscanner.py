@@ -23,7 +23,8 @@ def get_banner(sock: socket.socket):
 
 
 def decode_banner(banner):
-    converted = str(banner, 'utf-8')
+    # converted = str(banner, 'ascii')
+    converted = banner.decode()
     return converted
 
 
@@ -38,7 +39,8 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
         sock = socket.socket()
         sock.settimeout(timeout)
         sock.connect((ip, port))
-        pad = 15
+        ip_padding = 15
+        port_padding = 5
         try:
             banner = get_banner(sock)
             text_banner = decode_banner(banner)
@@ -48,15 +50,37 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
                 text_banner = clean_banner(text_banner)
                 decode_warning = True
             if not all(map(str.isprintable, text_banner)):
-                logger.critical("[!!] found \\x00 inside banner, cannot fix, EXITING")
-                exit()
+                logger.critical(
+                    "[!] found non-printable inside banner, "
+                    "cannot fix, EXITING")
+                return
             if decode_warning:
-                logger.info(f'[+] Open Port {ip:{pad}} {port}, banner (binary): *{{{text_banner}}}.')
+                logger.info(
+                    f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
+                    f'banner (binary)       : *b{{{text_banner}}}.'
+                )
             else:
-                logger.info(f'[+] Open Port {ip:{pad}} {port}: banner (text)  : [{text_banner}].')
+                logger.info(
+                    f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
+                    f'banner (text)         : *t[{text_banner}].'
+                )
+        except (
+            socket.timeout,
+            ConnectionError,
+            ConnectionResetError,
+            ConnectionAbortedError,
+            ConnectionRefusedError,
+        ):
+            logger.info(
+                f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}. '
+            )
         except Exception as e:
-            logger.info(f'[+] Open Port {ip:{pad}} {port}, no banner received: "{repr(e)}".')
+            logger.info(
+                f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
+                f'error receiving banner: {type(e)} "{e}".'
+            )
     except Exception as e:
+        # port closed
         pass
 
 
