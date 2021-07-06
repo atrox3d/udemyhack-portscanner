@@ -1,3 +1,4 @@
+import os
 import threading
 
 import portscanner
@@ -26,14 +27,17 @@ def print_to_file_decorator(file):
 
 
 target_threading, port_threading, timeout, start, end, args = parse_options()
-LOGDIR = "logs"
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+
 
 kwargs_dict = dict(
     start=start,
     end=end,
     timeout=timeout,
     port_threading=port_threading,
-    logdir=LOGDIR
+    logdir=LOG_DIR
 )
 kwargs = {k: v for k, v in kwargs_dict.items() if v is not None}
 

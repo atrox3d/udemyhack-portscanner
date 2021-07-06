@@ -9,6 +9,9 @@ from IPy import IP
 logging.basicConfig(level=logging.NOTSET, format="")
 rootlogger = logging.getLogger()
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+
 
 def check_ip(ip):
     try:
@@ -65,11 +68,11 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
                     f'banner (text)         : *t[{text_banner}].'
                 )
         except (
-            socket.timeout,
-            ConnectionError,
-            ConnectionResetError,
-            ConnectionAbortedError,
-            ConnectionRefusedError,
+                socket.timeout,
+                ConnectionError,
+                ConnectionResetError,
+                ConnectionAbortedError,
+                ConnectionRefusedError,
         ):
             logger.info(
                 f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}. '
@@ -107,10 +110,10 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
             scan_port(converted_ip, port, timeout, logger=logger)
 
 
-def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logdir="logs"):
+def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logdir=LOG_DIR):
     logger = logging.getLogger(target)
 
-    logfile = os.path.join("logs", f"{target}.log")
+    logfile = os.path.join(logdir, f"{target}.log")
     filehandler = logging.FileHandler(logfile, mode="w")
     logger.addHandler(filehandler)
 
