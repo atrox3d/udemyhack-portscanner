@@ -136,7 +136,7 @@ def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logd
     logfile = os.path.join(logdir, f"{target}.log")
     filehandler = logging.FileHandler(logfile, mode="w")
     logger.addHandler(filehandler)
-    logger.addHandler(logging.StreamHandler())
+    logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
     try:
         converted_ip = check_ip(target)
@@ -150,7 +150,7 @@ def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logd
     logger.info(f"[+] Port range: {start}-{end}")
     logger.info(f"[+] timeout   : {timeout}")
 
-    scan_ports(converted_ip, ports, timeout, port_threading, logger=logger)
+    scan_ports(converted_ip, ports, timeout, port_threading, logger=rootlogger)
     return True
 
 
