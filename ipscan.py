@@ -11,6 +11,7 @@ def create_threads(iplist, function):
 
     for ip in iplist:
         th = threading.Thread(target=function, args=(ip,))
+        print(f"starting thread {th.getName()}")
         th.start()
         threads.append(th)
 
@@ -46,24 +47,30 @@ print(kwargs)
 targets = args
 
 if target_threading:
-    threads = []
+    try:
+        threads = []
+        thread_count = 0
 
-    for target in targets:
-        th = threading.Thread(
-            target=portscanner.scan_target,
-            name=target,
-            args=(target,),
-            kwargs=kwargs
-        )
-        print(f"[+] starting thread {th.getName()}")
-        th.start()
-        threads.append(th)
-        time.sleep(0.5)
+        for target in targets:
+            th = threading.Thread(
+                target=portscanner.scan_target,
+                name=target,
+                args=(target,),
+                kwargs=kwargs
+            )
+            print(f"[+] starting thread {th.getName()}")
+            th.start()
+            thread_count += 1
+            threads.append(th)
+            time.sleep(0.5)
 
-    for th in threads:
-        print(f"[+] joining target thread {th.getName()}")
-        th.join()
-    print(f"[+] waiting for target threads")
+        for th in threads:
+            print(f"[+] joining target thread {th.getName()}")
+            th.join()
+        print(f"[+] waiting for target threads")
+    except Exception as e:
+        print(repr(e))
+        print(f"{thread_count=}")
 else:
     for target in targets:
         portscanner.scan_target(target, **kwargs)

@@ -162,24 +162,30 @@ def scan_targets(*targets, start, end, timeout, target_threading, port_threading
     )
 
     if target_threading:
-        threads = []
+        try:
+            threads = []
+            thread_count = 0
 
-        for target in targets:
-            th = threading.Thread(
-                target=scan_target,
-                name=target,
-                args=(target,),
-                kwargs=kwargs
-            )
-            print(f"[+] starting thread {th.getName()}")
-            th.start()
-            threads.append(th)
-            time.sleep(0.5)
+            for target in targets:
+                th = threading.Thread(
+                    target=scan_target,
+                    name=target,
+                    args=(target,),
+                    kwargs=kwargs
+                )
+                print(f"[+] starting thread {th.getName()}")
+                th.start()
+                thread_count += 1
+                threads.append(th)
+                time.sleep(0.5)
 
-        for th in threads:
-            print(f"[+] joining target thread {th.getName()}")
-            th.join()
-        print(f"[+] waiting for target threads")
+            for th in threads:
+                print(f"[+] joining target thread {th.getName()}")
+                th.join()
+            print(f"[+] waiting for target threads")
+        except Exception as e:
+            print(repr(e))
+            print(f"{thread_count=}")
     else:
         for target in targets:
             scan_target(target, **kwargs)
