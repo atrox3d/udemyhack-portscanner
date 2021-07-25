@@ -38,6 +38,7 @@ kwargs_dict = dict(
     end=end,
     timeout=timeout,
     port_threading=port_threading,
+    target_threading=target_threading,
     logdir=LOG_DIR
 )
 kwargs = {k: v for k, v in kwargs_dict.items() if v is not None}
@@ -71,6 +72,7 @@ if target_threading:
     except Exception as e:
         print(repr(e))
         print(f"{thread_count=}")
+        exit()
 else:
     for target in targets:
         portscanner.scan_target(target, **kwargs)

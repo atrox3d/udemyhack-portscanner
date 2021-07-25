@@ -136,6 +136,7 @@ def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logd
     logfile = os.path.join(logdir, f"{target}.log")
     filehandler = logging.FileHandler(logfile, mode="w")
     logger.addHandler(filehandler)
+    logger.addHandler(logging.StreamHandler())
 
     try:
         converted_ip = check_ip(target)
@@ -186,6 +187,7 @@ def scan_targets(*targets, start, end, timeout, target_threading, port_threading
         except Exception as e:
             print(repr(e))
             print(f"{thread_count=}")
+            return
     else:
         for target in targets:
             scan_target(target, **kwargs)
