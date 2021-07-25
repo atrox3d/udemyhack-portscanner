@@ -44,6 +44,7 @@ kwargs_dict = dict(
 kwargs = {k: v for k, v in kwargs_dict.items() if v is not None}
 
 print(kwargs)
+del kwargs['target_threading']
 
 targets = args
 
