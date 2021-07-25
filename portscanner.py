@@ -3,8 +3,12 @@ import sys
 import socket
 import threading
 import logging
+import time
 
 from IPy import IP
+import termcolor
+import colorama
+colorama.init()
 
 logging.basicConfig(level=logging.NOTSET, format="")
 rootlogger = logging.getLogger()
@@ -63,10 +67,17 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
                     f'banner (binary)       : *b{{{text_banner}}}.'
                 )
             else:
-                logger.info(
-                    f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
-                    f'banner (text)         : *t[{text_banner}].'
+                print(
+                    termcolor.colored(
+                        f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
+                        f'banner (text)         : *t[{text_banner}].',
+                        'green'
+                    )
                 )
+                logger.info(
+                        f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
+                        f'banner (text)         : *t[{text_banner}].'
+                    )
         except (
                 socket.timeout,
                 ConnectionError,
@@ -74,8 +85,16 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
                 ConnectionAbortedError,
                 ConnectionRefusedError,
         ):
+            print(
+                termcolor.colored(
+                    f'[+] XOpen Port {ip:{ip_padding}} {port:>{port_padding}}. ',
+                    'green'
+                )
+            )
             logger.info(
-                f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}. '
+                termcolor.colored(
+                    f'[+] XOpen Port {ip:{ip_padding}} {port:>{port_padding}}. '
+                )
             )
         except Exception as e:
             logger.info(
@@ -101,6 +120,7 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
             # print(f"[+] starting thread {th.getName()}")
             th.start()
             threads.append(th)
+            time.sleep(0.5)
 
         print(f"[+] waiting port threads for {converted_ip}:{ports}")
         for th in threads:
@@ -154,6 +174,7 @@ def scan_targets(*targets, start, end, timeout, target_threading, port_threading
             print(f"[+] starting thread {th.getName()}")
             th.start()
             threads.append(th)
+            time.sleep(0.5)
 
         for th in threads:
             print(f"[+] joining target thread {th.getName()}")

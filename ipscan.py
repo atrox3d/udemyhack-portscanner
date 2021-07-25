@@ -1,5 +1,6 @@
 import os
 import threading
+import time
 
 import portscanner
 from options import parse_options
@@ -31,7 +32,6 @@ target_threading, port_threading, timeout, start, end, args = parse_options()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 
-
 kwargs_dict = dict(
     start=start,
     end=end,
@@ -58,6 +58,7 @@ if target_threading:
         print(f"[+] starting thread {th.getName()}")
         th.start()
         threads.append(th)
+        time.sleep(0.5)
 
     for th in threads:
         print(f"[+] joining target thread {th.getName()}")
