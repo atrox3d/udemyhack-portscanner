@@ -118,12 +118,14 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
                 kwargs=dict(logger=logger)
             )
             # print(f"[+] starting thread {th.getName()}")
+            print(f"[+] starting thread {th.getName()}")
             th.start()
             threads.append(th)
             time.sleep(0.5)
 
         print(f"[+] waiting port threads for {converted_ip}:{ports}")
         for th in threads:
+            print(f"[+] joining thread {th.getName()}")
             th.join()
     else:
         for port in ports:
@@ -132,6 +134,7 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
 
 def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logdir=LOG_DIR):
     logger = logging.getLogger(target)
+    logger.setLevel(logging.NOTSET)
 
     logfile = os.path.join(logdir, f"{target}.log")
     filehandler = logging.FileHandler(logfile, mode="w")
