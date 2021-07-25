@@ -108,25 +108,31 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
 
 def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
     if threaded:
-        print(f"[+] starting port threads for {converted_ip} {ports}")
-        threads = []
-        for port in ports:
-            th = threading.Thread(
-                target=scan_port,
-                name=f"scan_port {converted_ip:{15}} {port}",
-                args=(converted_ip, port, timeout),
-                kwargs=dict(logger=logger)
-            )
-            # print(f"[+] starting thread {th.getName()}")
-            print(f"[+] starting thread {th.getName()}")
-            th.start()
-            threads.append(th)
-            time.sleep(0.5)
+        try:
+            print(f"[+] starting port threads for {converted_ip} {ports}")
+            threads = []
+            thread_count = 0
+            for port in ports:
+                th = threading.Thread(
+                    target=scan_port,
+                    name=f"scan_port {converted_ip:{15}} {port}",
+                    args=(converted_ip, port, timeout),
+                    kwargs=dict(logger=logger)
+                )
+                # print(f"[+] starting thread {th.getName()}")
+                print(f"[+] starting thread {th.getName()}")
+                th.start()
+                threads.append(th)
+                time.sleep(0.5)
 
-        print(f"[+] waiting port threads for {converted_ip}:{ports}")
-        for th in threads:
-            print(f"[+] joining thread {th.getName()}")
-            th.join()
+            print(f"[+] waiting port threads for {converted_ip}:{ports}")
+            for th in threads:
+                print(f"[+] joining thread {th.getName()}")
+                th.join()
+        except Exception as e:
+            print(repr(e))
+            print(f"{thread_count=}")
+            return
     else:
         for port in ports:
             scan_port(converted_ip, port, timeout, logger=logger)
