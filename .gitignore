@@ -2,3 +2,5 @@
 /.idea/
 /logs/
 __pycache__/
+/winvenv/
+/nmap/
