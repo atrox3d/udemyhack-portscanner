@@ -80,4 +80,5 @@ if target_threading:
         exit()
 else:
     for target in targets:
+        print("call portscanner.scan_target NON-THREADED")
         portscanner.scan_target(target, **kwargs)

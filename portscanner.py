@@ -8,6 +8,7 @@ import time
 from IPy import IP
 import termcolor
 import colorama
+
 colorama.init()
 
 logging.basicConfig(level=logging.NOTSET, format="")
@@ -125,9 +126,21 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
                 f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
                 f'error receiving banner: {type(e)} "{e}".'
             )
+    except KeyboardInterrupt:
+        print(f"CRTL-C: exit scanport {ip}:{port}")
+        raise KeyboardInterrupt
     except Exception as e:
         # port closed
         pass
+
+
+def progress(value, max, char='.'):
+    if not value % max:
+        print('\r', end="", flush=True)
+        print(" " * max, end="", flush=True)
+        print('\r', end="", flush=True)
+        # print()
+    print(char, end="", flush=True)
 
 
 def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
@@ -147,8 +160,10 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
                     args=(converted_ip, port, timeout),
                     kwargs=dict(logger=logger)
                 )
-                print(f"[+] starting thread {th.getName()}")
+                # print(f"[+] starting thread {th.getName()}")
                 th.start()
+                thread_count += 1
+                progress(thread_count, 80)
                 threads.append(th)
                 time.sleep(0.5)
 
@@ -157,14 +172,28 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
             for th in threads:
                 print(f"[+] joining thread {th.getName()}")
                 th.join()
+        except KeyboardInterrupt:
+            print("CTRL-C: join and exit")
+            for th in threads:
+                print(f"[+] joining thread {th.getName()}")
+                th.join()
+            exit()
         except Exception as e:
             print(repr(e))
             print(f"{thread_count=}")
             return
     else:
-        # non threaded loop
-        for port in ports:
-            scan_port(converted_ip, port, timeout, logger=logger)
+        count = 0
+        try:
+            # non threaded loop
+            for port in ports:
+                # logger.debug(f"scan_port({dict(converted_ip=converted_ip, port=port, timeout=timeout, logger=logger)})")
+                scan_port(converted_ip, port, timeout, logger=logger)
+                count += 1
+                progress(count, 80)
+        except KeyboardInterrupt:
+            print("CTRL-C: exit")
+            exit()
 
 
 def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logdir=LOG_DIR):
@@ -178,7 +207,7 @@ def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logd
     filehandler = logging.FileHandler(logfile, mode="w")
     logger.addHandler(filehandler)
     # setup stream handler
-    logger.addHandler(logging.StreamHandler(stream=sys.stdout))
+    # logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
     # get ip
     try:
@@ -191,12 +220,22 @@ def scan_target(target, start=1, end=100, timeout=0.5, port_threading=True, logd
     ports = range(start, end + 1)
 
     # show process params
+    params = dict(
+        target=target,
+        start=start,
+        end=end,
+        timeout=timeout,
+        port_threading=port_threading,
+        logdir=logdir
+    )
+    logger.debug(f"[+] scan_target({params})):")
     logger.info(f"[+] Target    : {target}")
     logger.info(f"[+] Target ip : {converted_ip}")
     logger.info(f"[+] Port range: {start}-{end}")
     logger.info(f"[+] timeout   : {timeout}")
 
     # scan ports
+    print("call scan_ports")
     scan_ports(converted_ip, ports, timeout, port_threading, logger=rootlogger)
     return True
 
