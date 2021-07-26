@@ -7,6 +7,7 @@ from options import parse_options
 
 
 def create_threads(iplist, function):
+    """create threads from list of ips and function"""
     threads = []
 
     for ip in iplist:
@@ -20,6 +21,8 @@ def create_threads(iplist, function):
 
 
 def print_to_file_decorator(file):
+    """prints to console and file"""
+
     def print_decorator(*args, **kwargs):
         print(*args, **kwargs)
         kwargs.update(file=file)
@@ -28,30 +31,31 @@ def print_to_file_decorator(file):
     return print_decorator
 
 
+# extract options
+# TODO: return dict
 target_threading, port_threading, timeout, start, end, args = parse_options()
 
+# get log dir absolute path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 
+# create options dict and remove None values
 kwargs_dict = dict(
     start=start,
     end=end,
     timeout=timeout,
     port_threading=port_threading,
-    target_threading=target_threading,
     logdir=LOG_DIR
 )
 kwargs = {k: v for k, v in kwargs_dict.items() if v is not None}
 
-print(kwargs)
-del kwargs['target_threading']
-
+# get target list
 targets = args
 
 if target_threading:
+    threads = []
+    thread_count = 0
     try:
-        threads = []
-        thread_count = 0
 
         for target in targets:
             th = threading.Thread(
