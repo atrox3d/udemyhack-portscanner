@@ -19,6 +19,10 @@ def show_help():
 def parse_options():
     options = "hTPt:r:s:e:"
 
+    if len(sys.argv) < 2:
+        show_help()
+        exit()
+
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
