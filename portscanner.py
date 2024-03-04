@@ -9,7 +9,10 @@ from IPy import IP
 import termcolor
 import colorama
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 colorama.init()
@@ -93,7 +96,10 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
                 )
             else:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 # banner is text
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
                 print(
@@ -103,10 +109,13 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
                         'green'
                     )
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 )
                 logger.info(
                     f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
                     f'banner (text)         : *t[{text_banner}].'
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
                 )
@@ -122,7 +131,10 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
                 ConnectionRefusedError,
         ):
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             # port is open but failed to extract banner
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
             print(
@@ -179,6 +191,9 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
             th.start()
             threads.append(th)
             time.sleep(0.5)
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
         try:
