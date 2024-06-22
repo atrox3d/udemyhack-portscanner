@@ -39,10 +39,7 @@ target_threading, port_threading, timeout, start, end, args = parse_options()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 
-<<<<<<< Updated upstream
 # create options dict and remove None values
-=======
->>>>>>> Stashed changes
 kwargs_dict = dict(
     start=start,
     end=end,
@@ -57,7 +54,6 @@ targets = args
 
 if target_threading:
     threads = []
-<<<<<<< Updated upstream
     thread_count = 0
     try:
 
@@ -82,25 +78,6 @@ if target_threading:
         print(repr(e))
         print(f"{thread_count=}")
         exit()
-=======
-
-    for target in targets:
-        th = threading.Thread(
-            target=portscanner.scan_target,
-            name=target,
-            args=(target,),
-            kwargs=kwargs
-        )
-        print(f"[+] starting thread {th.getName()}")
-        th.start()
-        threads.append(th)
-        time.sleep(0.5)
-
-    for th in threads:
-        print(f"[+] joining target thread {th.getName()}")
-        th.join()
-    print(f"[+] waiting for target threads")
->>>>>>> Stashed changes
 else:
     for target in targets:
         print("call portscanner.scan_target NON-THREADED")
