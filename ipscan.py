@@ -40,10 +40,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 
 <<<<<<< Updated upstream
-<<<<<<< Updated upstream
 # create options dict and remove None values
-=======
->>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 kwargs_dict = dict(
