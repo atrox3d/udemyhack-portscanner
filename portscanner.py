@@ -8,10 +8,6 @@ import time
 from IPy import IP
 import termcolor
 import colorama
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 colorama.init()
 
 logging.basicConfig(level=logging.NOTSET, format="")
@@ -92,23 +88,12 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
                     f'banner (binary)       : *b{{{text_banner}}}.'
                 )
             else:
-<<<<<<< Updated upstream
-                # banner is text
-=======
->>>>>>> Stashed changes
                 print(
                     termcolor.colored(
                         f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
                         f'banner (text)         : *t[{text_banner}].',
                         'green'
                     )
-<<<<<<< Updated upstream
-                )
-                logger.info(
-                    f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
-                    f'banner (text)         : *t[{text_banner}].'
-=======
->>>>>>> Stashed changes
                 )
                 logger.info(
                         f'[+] Open Port {ip:{ip_padding}} {port:>{port_padding}}: '
@@ -121,10 +106,6 @@ def scan_port(ip, port, timeout=0.5, logger=rootlogger):
                 ConnectionAbortedError,
                 ConnectionRefusedError,
         ):
-<<<<<<< Updated upstream
-            # port is open but failed to extract banner
-=======
->>>>>>> Stashed changes
             print(
                 termcolor.colored(
                     f'[+] XOpen Port {ip:{ip_padding}} {port:>{port_padding}}. ',
@@ -165,9 +146,6 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
     if threaded:
         # threaded loop
         threads = []
-<<<<<<< Updated upstream
-        thread_count = 0
-=======
         for port in ports:
             th = threading.Thread(
                 target=scan_port,
@@ -179,7 +157,6 @@ def scan_ports(converted_ip, ports, timeout, threaded=True, logger=rootlogger):
             th.start()
             threads.append(th)
             time.sleep(0.5)
->>>>>>> Stashed changes
 
         try:
             print(f"[+] starting port threads for {converted_ip} {ports}")
@@ -285,33 +262,6 @@ def scan_targets(*targets, start, end, timeout, target_threading, port_threading
         threads = []
         thread_count = 0
 
-<<<<<<< Updated upstream
-        try:
-            # thread loop
-            for target in targets:
-                th = threading.Thread(
-                    target=scan_target,
-                    name=target,
-                    args=(target,),
-                    kwargs=kwargs
-                )
-                print(f"[+] starting thread {th.getName()}")
-                th.start()
-                thread_count += 1
-                threads.append(th)
-                time.sleep(0.5)
-
-            # join loop
-            for th in threads:
-                print(f"[+] joining target thread {th.getName()}")
-                th.join()
-            print(f"[+] waiting for target threads")
-
-        except Exception as e:
-            print(repr(e))
-            print(f"{thread_count=}")
-            return
-=======
         for target in targets:
             th = threading.Thread(
                 target=scan_target,
@@ -328,7 +278,6 @@ def scan_targets(*targets, start, end, timeout, target_threading, port_threading
             print(f"[+] joining target thread {th.getName()}")
             th.join()
         print(f"[+] waiting for target threads")
->>>>>>> Stashed changes
     else:
         # non threaded loop
         for target in targets:
